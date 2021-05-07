@@ -1,0 +1,90 @@
+Name: Gepei Lu
+
+USC ID: 1595140623
+
+work description:
+In this socket programming assignment, I completed a distributed system which consists of 4 nodes:
+a main server (AWS), Server A and Server B, among which UDP protocol has been used to communicate with each other.
+While TCP protocol has been used between client and the main server(AWS) to communicate with each other.
+
+There are 4 code files in the project:
+The client.cpp boot up a TCP socket client to communicate with AWS server. It will send the request to AWS server and receive response from AWS server.
+
+The aws.cpp establish an AWS server to receive request from client using TCP and send request to serverA using UDP. Then it will receive reply from serverA using UDP,
+send query to serverB using UDP, finally get response from serverB using UDP and send response back to client using TCP.
+
+The serverA.cpp establish a UDP server. It will receive request from AWS server, read the map.txt file to construct graphs, compute the shortest path to every node
+based on the given mapID and start vertex, finally send reply to AWS server.
+
+The serverB.cpp establish a UDP server. It will receive query from AWS server and compute propagation delay, transmission delay and the end to end delay from start vertex to every other node,
+ finally send response to AWS server.
+
+The format of all the messages exchanged.
+client -> AWS: the struct Request client will send to AWS
+struct Request {
+    char map_id[100];
+    char start_vertex[100];
+    char file_size[100];
+};
+
+AWS -> serverA: the struct Request AWS will send to serverA
+struct Request {
+    char map_id[100];
+    char start_vertex[100];
+    char file_size[100];
+};
+
+AWS <- serverA: the struct Reply AWS will receive from serverA
+struct Reply{
+    char vp[100];
+    char vt[100];
+    char vertices[100];
+    char minDist[100];
+};
+
+AWS -> serverB: the struct Query AWS will send to serverB
+struct Query {
+    char file_size[100];
+    char vp[100];
+    char vt[100];
+    char vertices[100];
+    char minDist[100];
+};
+
+AWS <- serverB: the struct Response AWS will receive from serverA
+struct Response {
+    double tp[100];
+    double tt[100];
+    char vertices[100];
+    double delay[100];
+    char minDist[100];
+};
+
+client <- AWS: the struct Response AWS will receive from serverA
+struct Response {
+    double tp[100];
+    double tt[100];
+    char vertices[100];
+    double delay[100];
+    char minDist[100];
+};
+
+
+Reused Code:
+client.c------line: 67-104
+aws.c-------line: 91-140 148-199 210-224
+serverA.c-------line: 93-124
+serverB.c--------line: 47-76
+
+these codes from Beej's Guide:
+6. Client-Server Background
+6.1. A Simple Stream Server: server.c
+6.2. A Simple Stream client: client.c
+6.3. Datagram Sockets: talker.c and listener.c
+
+
+Any idiosyncrasy of your project:
+From the above struct, I define all the arrays of size 100,
+which means that the number of bytes of string cannot be more than 100 if it is to be stored in array
+but the size of the array can be defined to become larger, here I just define the size of 100
+
